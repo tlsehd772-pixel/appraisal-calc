@@ -7,22 +7,29 @@ from streamlit_option_menu import option_menu
 # ------------------------------------------------------------------------------
 st.markdown("""
     <style>
-    /* 1. 마크다운(**)과 HTML(<b>) 굵은 글씨를 무조건 가장 두껍게(900) 만듭니다 */
-    strong, b {
+    /* 1. 모든 태그의 볼드체 설정을 최우선으로 강제함 */
+    strong, b, h1, h2, h3, h4, h5, h6 {
         font-weight: 900 !important;
-        color: #111 !important; /* 완전 검은색으로 진하게 */
+        color: #000000 !important; /* 완전 검정 */
     }
     
-    /* 2. 표(Table) 안에서 글씨가 잘리지 않고 줄바꿈되도록 설정 */
+    /* 2. 따옴표(')나 쌍따옴표(")가 포함된 볼드체가 얇게 나오는 현상 해결 */
+    div[data-testid="stMarkdownContainer"] p strong,
+    div[data-testid="stMarkdownContainer"] p b {
+        font-weight: 900 !important;
+        -webkit-text-stroke: 0.5px black; /* 글자 테두리를 줘서 더 두껍게 */
+    }
+
+    /* 3. 표(Table) 안에서의 볼드체 및 줄바꿈 처리 */
     th, td {
-        white-space: pre-wrap !important; /* 줄바꿈 허용 */
-        vertical-align: top !important;   /* 위쪽 정렬 */
+        white-space: pre-wrap !important;
+        vertical-align: top !important;
     }
     
-    /* 3. 탭(Tab) 폰트 크기 키우기 (선택사항) */
+    /* 4. 탭(Tab) 스타일 */
     button[data-baseweb="tab"] {
         font-size: 16px !important;
-        font-weight: 600 !important;
+        font-weight: 700 !important;
     }
     </style>
 """, unsafe_allow_html=True)
