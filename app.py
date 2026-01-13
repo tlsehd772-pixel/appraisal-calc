@@ -19,7 +19,8 @@ st.markdown("수험생: 신현동 | 목표: 감정평가사 합격")
 st.markdown("---")
 
 # --- 사이드바: 평가 방식 선택 ---
-menu = option_menu(
+with st.sidebar:
+    menu = option_menu(
     "평가 대상을 선택하세요",
     [
         "🏠 홈 / 평가 가이드 (분류표)",
