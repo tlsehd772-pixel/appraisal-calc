@@ -1,5 +1,6 @@
 import streamlit as st
 import datetime
+from streamlit_option_menu import option_menu
 
 # --- 페이지 기본 설정 ---
 st.set_page_config(page_title="감정평가 실무/이론 계산기", layout="wide")
@@ -18,7 +19,7 @@ st.markdown("수험생: 신현동 | 목표: 감정평가사 합격")
 st.markdown("---")
 
 # --- 사이드바: 평가 방식 선택 ---
-menu = st.sidebar.selectbox(
+menu = option_menu(
     "평가 대상을 선택하세요",
     [
         "🏠 홈 / 평가 가이드 (분류표)",
@@ -34,8 +35,32 @@ menu = st.sidebar.selectbox(
         "토지/건물 가치 분리 (잔여법 & 투자결합법)",
         "공공사업 보상 (보상평가)",
         "재개발/재건축 (정비사업평가)"
-    ]
-)
+    ],
+        icons=[
+            'house',           # 홈
+            'clipboard-check', # 산정요인
+            'geo-alt',         # 토지
+            'building',        # 건물
+            'layers',          # 일괄/구분
+            'graph-up-arrow',  # 수익성
+            'calculator',      # DCF
+            'receipt',         # 적산법
+            'journal-text',    # 임대사례
+            'pie-chart',       # 잔여법
+            'cash-stack',      # 보상
+            'hammer',          # 재개발
+            'book-half'        # 법령
+        ],
+        menu_icon="cast",      # 메뉴 상단 아이콘
+        default_index=0,
+        styles={
+            "container": {"padding": "5!important", "background-color": "#fafafa"},
+            "icon": {"color": "orange", "font-size": "25px"}, 
+            "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
+            "nav-link-selected": {"background-color": "#02ab21"},
+        }
+    )
+
 # ==============================================================================
 # 0. 홈 / 평가 가이드 (Dashboard)
 # ==============================================================================
