@@ -2,6 +2,31 @@ import streamlit as st
 import datetime
 from streamlit_option_menu import option_menu
 
+# ------------------------------------------------------------------------------
+# 🎨 [Global Style] 볼드체(굵은 글씨) 강제 적용 및 테이블 스타일링
+# ------------------------------------------------------------------------------
+st.markdown("""
+    <style>
+    /* 1. 마크다운(**)과 HTML(<b>) 굵은 글씨를 무조건 가장 두껍게(900) 만듭니다 */
+    strong, b {
+        font-weight: 900 !important;
+        color: #111 !important; /* 완전 검은색으로 진하게 */
+    }
+    
+    /* 2. 표(Table) 안에서 글씨가 잘리지 않고 줄바꿈되도록 설정 */
+    th, td {
+        white-space: pre-wrap !important; /* 줄바꿈 허용 */
+        vertical-align: top !important;   /* 위쪽 정렬 */
+    }
+    
+    /* 3. 탭(Tab) 폰트 크기 키우기 (선택사항) */
+    button[data-baseweb="tab"] {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- 페이지 기본 설정 ---
 st.set_page_config(page_title="감정평가 실무/이론 계산기", layout="wide")
 
