@@ -66,6 +66,7 @@ with st.sidebar:
         "수익성 부동산 (수익환원법)",
         "투자타당성/가치 (할인현금수지분석법 DCF)",
         "💎 기업가치/무형자산 (통합산정)",
+        "🏭 기계기구 (도입기계)",
         "임대료 (적산법)",
         "임대료 (임대사례비교법)",
         "토지/건물 가치 분리 (잔여법 & 투자결합법)",
@@ -1240,7 +1241,7 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
         st.subheader("🏭 공장재단 평가 시 고려 요인")
         st.info("공장재단은 **토지 + 건물 + 기계기구 + 무형자산**의 유기적 결합과 효용을 확인해야 합니다.")
 
-        col_f1, col_f2 = st.columns(2)
+        col_f1, col_f2, col_f3 = st.columns(3)
 
         with col_f1:
             st.markdown("##### 1. 공장 부지 (토지)")
@@ -1259,15 +1260,35 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
             * <b>기둥간격(Span):</b> 기계 배치 효율성 (H-Beam 간격)
             * <b>부대설비:</b> 호이스트(Crane) 톤수, 수전설비 용량
             """, unsafe_allow_html=True)
+
+        with col_f3:    
+            st.markdown("##### 3. 기계기구 (Machinery)")
+            st.markdown("""
+            | 구분 | 주요 확인 사항 | 세부 내용 |
+            | :--- | :--- | :--- |
+            | <b>범용성</b> | <b>시장 매매 가능성</b> | - **범용기계:** 선반, 밀링, 사출기 (중고시장 거래 활발)<br>- **전용기계:** 특정 공정 전용 설비 (해체 시 고철값인 경우 많음) |
+            | <b>현상태</b> | <b>감가수정</b> | - **가동여부:** 현재 가동 중 vs 유휴(녹슬음)<br>- **오버홀:** 주요 부품 교체 및 수리 이력 |
+            | <b>배치</b> | <b>생산 효율성</b> | - 공정 라인(Lay-out)의 합리성, 부대설비와의 결합 정도 |
+            """, unsafe_allow_html=True)
+
+            col_m1, col_m2 = st.columns(2)
+            with col_m1:
+                st.markdown("##### 3. 국산 기계기구")
+                st.markdown("""
+                * <b>범용성:</b> 중고매매 가능(범용) vs 고철값(전용)
+                * <b>현상태:</b> 가동 중 vs 유휴(녹슬음)
+                * <b>가격자료:</b> 제작사 견적서, 시중 물가정보지
+                """, unsafe_allow_html=True)
             
-        st.markdown("##### 3. 기계기구 (Machinery)")
-        st.markdown("""
-        | 구분 | 주요 확인 사항 | 세부 내용 |
-        | :--- | :--- | :--- |
-        | <b>범용성</b> | <b>시장 매매 가능성</b> | - **범용기계:** 선반, 밀링, 사출기 (중고시장 거래 활발)<br>- **전용기계:** 특정 공정 전용 설비 (해체 시 고철값인 경우 많음) |
-        | <b>현상태</b> | <b>감가수정</b> | - **가동여부:** 현재 가동 중 vs 유휴(녹슬음)<br>- **오버홀:** 주요 부품 교체 및 수리 이력 |
-        | <b>배치</b> | <b>생산 효율성</b> | - 공정 라인(Lay-out)의 합리성, 부대설비와의 결합 정도 |
-        """, unsafe_allow_html=True)
+            with col_m2:
+                st.markdown("##### 4. 도입 기계 (Imported)")
+                st.markdown("""
+                * <b>CIF 가격:</b> FOB(현지인도) + 운임 + 보험료
+                * <b>환율적용:</b> <b>기준시점(평가일)</b>의 전신환매도율(TTS) 적용
+                * <b>부대비용:</b> 관세(8%), 통관비, 국내운반비, 설치비
+                * <b>확인서류:</b> 수입면장(Import Permit), Offer Sheet
+                """, unsafe_allow_html=True)
+
 # ==============================================================================
 # 12. 감정평가에 관한 규칙 (PDF 원문 기반 정본)
 # ==============================================================================
@@ -1747,3 +1768,136 @@ elif menu == "💎 기업가치/무형자산 (통합산정)":
         
         if excess_profit < 0:
             st.error("초과수익이 마이너스입니다. 영업권 가치가 발생하지 않습니다.")
+
+# ==============================================================================
+# 15. 기계기구 (도입기계) 계산기
+# ==============================================================================
+elif menu == "🏭 기계기구 (도입기계)":
+    st.header("🏭 기계기구 평가 (도입기계 등)")
+    st.markdown("수입 기계의 **재조달원가(Cost Buildup)**와 **감가수정**을 산정합니다.")
+
+    tab1, tab2 = st.tabs(["🚢 도입기계 재조달원가 산정", "📉 감가수정 (정률법/정액법)"])
+
+    # --------------------------------------------------------------------------
+    # Tab 1: 도입기계 재조달원가 (Cost Buildup)
+    # --------------------------------------------------------------------------
+    with tab1:
+        st.subheader("1. 수입기계 재조달원가 구성")
+        st.caption("FOB/CIF 가격에 환율, 관세, 부대비용을 더해 현장 설치 완료 시점의 원가를 구합니다.")
+
+        # 1. 외화 가격 입력
+        st.markdown("##### ① 수입 물품대 (Currency)")
+        col_m1, col_m2, col_m3 = st.columns([1, 1.5, 1.5])
+        
+        with col_m1:
+            currency = st.selectbox("통화", ["USD ($)", "EUR (€)", "JPY (¥)", "CNY (¥)"])
+        with col_m2:
+            price_type = st.radio("가격 조건", ["CIF (운임보험료포함)", "FOB (본선인도)"])
+        with col_m3:
+            foreign_amount = st.number_input(f"외화 금액 ({price_type})", value=100000.0, format="%.2f")
+
+        # FOB일 경우 운임/보험료 추가 입력
+        if price_type == "FOB (본선인도)":
+            st.info("FOB 조건이므로 운임과 보험료를 더해 CIF를 산출합니다.")
+            col_add1, col_add2 = st.columns(2)
+            with col_add1:
+                freight_rate = st.number_input("해상운임률 (%)", value=5.0, help="FOB 가격 대비 비율") / 100
+            with col_add2:
+                ins_rate = st.number_input("보험료율 (%)", value=0.5, help="FOB 가격 대비 비율") / 100
+            
+            cif_foreign = foreign_amount * (1 + freight_rate + ins_rate)
+        else:
+            cif_foreign = foreign_amount
+
+        st.divider()
+
+        # 2. 환율 및 관세
+        st.markdown("##### ② 환율 및 세금 (Tax & Rate)")
+        col_t1, col_t2 = st.columns(2)
+        
+        with col_t1:
+            exchange_rate = st.number_input("기준시점 환율 (TTS, 전신환매도율)", value=1450.0, format="%.2f", help="평가일 기준 금융결제원 최초고시 매도율 적용이 원칙")
+            duty_rate = st.number_input("관세율 (%)", value=8.0, help="기본 8%, WTO협정/FTA 적용 시 0% 가능") / 100
+        
+        with col_t2:
+            incidental_rate = st.number_input("부대비용율 (% of CIF)", value=5.0, help="통관비, 하역비, 국내운송비, 설치비 등 (통상 5~10%)") / 100
+
+        # 계산 로직
+        # 1. CIF 원화 환산액
+        cif_krw = cif_foreign * exchange_rate
+        
+        # 2. 관세 (CIF 원화 * 관세율)
+        duty_amt = cif_krw * duty_rate
+        
+        # 3. 부대비용 (CIF 원화 * 부대비용율) - 실무적으로 CIF 기준 비율 적용 많이 함
+        incidental_amt = cif_krw * incidental_rate
+        
+        # 4. 재조달원가
+        replacement_cost = cif_krw + duty_amt + incidental_amt
+
+        # 결과 출력
+        st.write("---")
+        st.markdown(f"#### 📊 산정 결과 (단위: 원)")
+        
+        if price_type == "FOB (본선인도)":
+             st.write(f"- **CIF 외화 환산액:** {cif_foreign:,.2f} {currency.split(' ')[0]}")
+
+        col_res1, col_res2, col_res3, col_res4 = st.columns(4)
+        col_res1.metric("1. CIF 가격 (A)", f"{cif_krw:,.0f}")
+        col_res2.metric("2. 관세 (B)", f"{duty_amt:,.0f}")
+        col_res3.metric("3. 부대비용 (C)", f"{incidental_amt:,.0f}")
+        col_res4.metric("💰 재조달원가 (Sum)", f"{replacement_cost:,.0f}", delta="Cost Base")
+
+        st.caption("※ 부가세(VAT)는 사업자가 환급받으므로 포함하지 않는 것이 원칙입니다.")
+
+    # --------------------------------------------------------------------------
+    # Tab 2: 기계 감가수정 (정률법)
+    # --------------------------------------------------------------------------
+    with tab2:
+        st.subheader("2. 감가수정 (적산가액 산정)")
+        st.info("기계기구는 능률 저하가 체감하므로 주로 **정률법(Declining Balance Method)**을 사용합니다.")
+
+        # 변수 입력
+        col_d1, col_d2 = st.columns(2)
+        with col_d1:
+            # Tab 1에서 계산된 값 가져오기 (없으면 0)
+            input_rc = st.number_input("재조달원가 (원)", value=int(replacement_cost) if 'replacement_cost' in locals() else 100000000, step=1000000, format="%d")
+            salvage_ratio = st.number_input("잔존가치율 (%)", value=10.0, help="내용연수 만료 시 고철가액 비율 (통상 0~10%)") / 100
+        
+        with col_d2:
+            life_total = st.number_input("내용연수 (년)", value=10)
+            elapsed_year = st.number_input("경과연수 (년)", value=3.0, step=0.1)
+
+        # 감가수정 방법 선택
+        dep_method = st.radio("감가수정 방법", ["정률법 (원칙)", "정액법 (참고용)"])
+
+        if dep_method == "정률법 (원칙)":
+            # 정률(r) 계산: 1 - (잔존율)^(1/n)
+            if life_total > 0 and salvage_ratio > 0:
+                rate_r = 1 - (salvage_ratio ** (1/life_total))
+            else:
+                rate_r = 0
+            
+            # 현가 = 재조달원가 * (1-r)^n
+            current_value = input_rc * ((1 - rate_r) ** elapsed_year)
+            accumulated_dep = input_rc - current_value
+            
+            st.metric("매년 상각률 (r)", f"{rate_r*100:.2f} %")
+            
+        else: # 정액법
+            # 매년 상각액 = (C - S) / n
+            annual_dep = (input_rc * (1 - salvage_ratio)) / life_total
+            accumulated_dep = annual_dep * elapsed_year
+            
+            # 상한선 체크 (감가누계액은 재조달원가-잔존가치를 넘을 수 없음)
+            max_dep = input_rc * (1 - salvage_ratio)
+            if accumulated_dep > max_dep:
+                accumulated_dep = max_dep
+                
+            current_value = input_rc - accumulated_dep
+
+        st.divider()
+        c1, c2, c3 = st.columns(3)
+        c1.metric("재조달원가", f"{input_rc:,.0f} 원")
+        c2.metric("감가누계액 (▼)", f"{accumulated_dep:,.0f} 원")
+        c3.metric("🏭 기계 평가액", f"{current_value:,.0f} 원", delta_color="inverse")
