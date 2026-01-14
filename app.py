@@ -1241,7 +1241,7 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
         st.subheader("🏭 공장재단 평가 시 고려 요인")
         st.info("공장재단은 **토지 + 건물 + 기계기구 + 무형자산**의 유기적 결합과 효용을 확인해야 합니다.")
 
-        col_f1, col_f2, col_f3 = st.columns(2)
+        col_f1, col_f2 = st.columns(2)
 
         with col_f1:
             st.markdown("##### 1. 공장 부지 (토지)")
@@ -1261,33 +1261,33 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
             * <b>부대설비:</b> 호이스트(Crane) 톤수, 수전설비 용량
             """, unsafe_allow_html=True)
 
-        with col_f3:    
-            st.markdown("##### 3. 기계기구 (Machinery)")
-            st.markdown("""
-            | 구분 | 주요 확인 사항 | 세부 내용 |
-            | :--- | :--- | :--- |
-            | <b>범용성</b> | <b>시장 매매 가능성</b> | - **범용기계:** 선반, 밀링, 사출기 (중고시장 거래 활발)<br>- **전용기계:** 특정 공정 전용 설비 (해체 시 고철값인 경우 많음) |
-            | <b>현상태</b> | <b>감가수정</b> | - **가동여부:** 현재 가동 중 vs 유휴(녹슬음)<br>- **오버홀:** 주요 부품 교체 및 수리 이력 |
-            | <b>배치</b> | <b>생산 효율성</b> | - 공정 라인(Lay-out)의 합리성, 부대설비와의 결합 정도 |
-            """, unsafe_allow_html=True)
+          
+        st.markdown("##### 3. 기계기구 (Machinery)")
+        st.markdown("""
+        | 구분 | 주요 확인 사항 | 세부 내용 |
+        | :--- | :--- | :--- |
+        | <b>범용성</b> | <b>시장 매매 가능성</b> | - **범용기계:** 선반, 밀링, 사출기 (중고시장 거래 활발)<br>- **전용기계:** 특정 공정 전용 설비 (해체 시 고철값인 경우 많음) |
+        | <b>현상태</b> | <b>감가수정</b> | - **가동여부:** 현재 가동 중 vs 유휴(녹슬음)<br>- **오버홀:** 주요 부품 교체 및 수리 이력 |
+        | <b>배치</b> | <b>생산 효율성</b> | - 공정 라인(Lay-out)의 합리성, 부대설비와의 결합 정도 |
+        """, unsafe_allow_html=True)
 
-            col_m1, col_m2 = st.columns(2)
-            with col_m1:
-                st.markdown("##### 3. 국산 기계기구")
-                st.markdown("""
-                * <b>범용성:</b> 중고매매 가능(범용) vs 고철값(전용)
-                * <b>현상태:</b> 가동 중 vs 유휴(녹슬음)
-                * <b>가격자료:</b> 제작사 견적서, 시중 물가정보지
-                """, unsafe_allow_html=True)
+        col_m1, col_m2 = st.columns(2)
+        with col_m1:
+            st.markdown("##### 3. 국산 기계기구")
+            st.markdown("""
+            * <b>범용성:</b> 중고매매 가능(범용) vs 고철값(전용)
+            * <b>현상태:</b> 가동 중 vs 유휴(녹슬음)
+            * <b>가격자료:</b> 제작사 견적서, 시중 물가정보지
+            """, unsafe_allow_html=True)
             
-            with col_m2:
-                st.markdown("##### 4. 도입 기계 (Imported)")
-                st.markdown("""
-                * <b>CIF 가격:</b> FOB(현지인도) + 운임 + 보험료
-                * <b>환율적용:</b> <b>기준시점(평가일)</b>의 전신환매도율(TTS) 적용
-                * <b>부대비용:</b> 관세(8%), 통관비, 국내운반비, 설치비
-                * <b>확인서류:</b> 수입면장(Import Permit), Offer Sheet
-                """, unsafe_allow_html=True)
+        with col_m2:
+            st.markdown("##### 4. 도입 기계 (Imported)")
+            st.markdown("""
+            * <b>CIF 가격:</b> FOB(현지인도) + 운임 + 보험료
+            * <b>환율적용:</b> <b>기준시점(평가일)</b>의 전신환매도율(TTS) 적용
+            * <b>부대비용:</b> 관세(8%), 통관비, 국내운반비, 설치비
+            * <b>확인서류:</b> 수입면장(Import Permit), Offer Sheet
+            """, unsafe_allow_html=True)
 
 # ==============================================================================
 # 12. 감정평가에 관한 규칙 (PDF 원문 기반 정본)
