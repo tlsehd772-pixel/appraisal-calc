@@ -1273,7 +1273,7 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
 
         col_m1, col_m2 = st.columns(2)
         with col_m1:
-            st.markdown("##### 3. 국산 기계기구")
+            st.markdown("##### 3-1. 국산 기계기구")
             st.markdown("""
             * <b>범용성:</b> 중고매매 가능(범용) vs 고철값(전용)
             * <b>현상태:</b> 가동 중 vs 유휴(녹슬음)
@@ -1281,7 +1281,7 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
             """, unsafe_allow_html=True)
             
         with col_m2:
-            st.markdown("##### 4. 도입 기계 (Imported)")
+            st.markdown("##### 3-2. 도입 기계 (Imported)")
             st.markdown("""
             * <b>CIF 가격:</b> FOB(현지인도) + 운임 + 보험료
             * <b>환율적용:</b> <b>기준시점(평가일)</b>의 전신환매도율(TTS) 적용
