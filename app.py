@@ -58,12 +58,13 @@ with st.sidebar:
         "🏠 홈 / 평가 가이드 (분류표)",
         "📋 산정 요인 및 고려사항 가이드",
         "📜 관련 법령 (감정평가법/감칙)",
-        "📊 요인 비교/산정 (격차율)",   # 👈 새로 추가됨 (기본 화면)
+        "📊 요인 비교/산정 (격차율)", 
         "토지 (공시지가기준법)", 
         "건물 (원가법)", 
         "토지건물 일괄/구분 (거래사례비교법)",
         "수익성 부동산 (수익환원법)",
         "투자타당성/가치 (할인현금수지분석법 DCF)",
+        "💎 기업가치/무형자산 (통합산정)",
         "임대료 (적산법)",
         "임대료 (임대사례비교법)",
         "토지/건물 가치 분리 (잔여법 & 투자결합법)",
@@ -73,7 +74,8 @@ with st.sidebar:
         icons=[
             'house',           # 홈
             'clipboard-check', # 산정요인
-            'bar-chart-steps', # 👈 새로 추가됨! (격차율 아이콘) 
+            'bar-chart-steps', 
+            'gem',  # 👈 아이콘 추가 (보석 모양) 
             'geo-alt',         # 토지
             'building',        # 건물
             'layers',          # 일괄/구분
@@ -1174,7 +1176,7 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
     with tab4:
         st.subheader("💰 임대료 및 권리 평가 시 고려 요인")
         
-        col_r1, col_r2 = st.columns(2)
+        col_r1, col_r2, col_r3 = st.columns(3)
         
         with col_r1:
             st.markdown("**1. 임대료 평가 (임대사례비교법)**")
@@ -1193,7 +1195,21 @@ elif menu == "📋 산정 요인 및 고려사항 가이드":
             * **위험성:** 경쟁 업체 진입 가능성, 시장 변화 (할인율 반영)
             * **무형요인:** 브랜드 인지도, 거래처 관계, 특허 기술
             """)
+        with col_r3:
+            st.markdown("""
+            | 구분 | 주요 확인 사항 | 핵심 평가 포인트 |
+            | :--- | :--- | :--- |
+            | <b>공통사항</b> | <b>수익/위험/기간</b> | - **수익성:** 매출액 기여도, 로열티율 추정<br>- **위험성:** 기술의 진부화, 경쟁사 진입 (할인율 반영)<br>- **기간:** 법적 보호기간 vs 경제적 수명 (짧은 것 기준) |
+            | <b>영업권</b> | <b>초과수익력</b> | - 최근 3~5년 영업이익 추이<br>- 인적 자산, 거래처 관계, 브랜드 인지도<br>- 동종 업계 평균 이익률 대비 초과분 |
+            | <b>특허권</b> | <b>기술가치</b> | - **기술성:** 기술의 혁신성, 대체 기술 존재 여부<br>- **권리성:** 특허의 범위, 무효 가능성, 남은 기간<br>- **사업성:** 해당 기술을 적용한 제품의 시장 점유율 |
+            | <b>상표권</b> | <b>브랜드가치</b> | - 소비자 인지도, 광고 선전비 투입 내역<br>- 브랜드 유지/갱신 가능성 |
+            """, unsafe_allow_html=True)
 
+        st.success("""
+        **💡 주요 평가 방법 (Tip)**
+        * **로열티공제법 (Relief-from-Royalty):** "만약 이 기술이 내 것이 아니라면 남에게 줘야 할 로열티만큼을 절약한 것"으로 보아 가치 산정.
+        * **다기간초과수익법 (MPEEM):** 전체 기업 수익에서 다른 자산(운전자본, 유형자산 등)이 기여한 수익을 뺀 나머지를 무형자산의 귀속분으로 산정.
+        """)
     # --------------------------------------------------------------------------
     # Tab 5: 목적별 특이사항 (담보/경매/보상)
     # --------------------------------------------------------------------------
@@ -1553,3 +1569,180 @@ elif menu == "📊 요인 비교/산정 (격차율)":
             
             reg_factor = target_region_score / base_score
             st.error(f"🔢 산정된 지역요인: **{reg_factor:.3f}**")
+
+# ==============================================================================
+# 14. 기업가치 및 무형자산 통합 계산기
+# ==============================================================================
+elif menu == "💎 기업가치/무형자산 (통합산정)":
+    st.header("💎 기업가치 및 무형자산 평가")
+    st.markdown("비상장주식, 특허권, 영업권 등 특수 물건의 가치를 산정합니다.")
+
+    tab1, tab2, tab3 = st.tabs(["🏭 기업가치 (비상장/EV)", "📜 지식재산권 (로열티공제법)", "🤝 영업권 (초과수익법)"])
+
+    # --------------------------------------------------------------------------
+    # Tab 1: 기업가치 (Enterprise Value)
+    # --------------------------------------------------------------------------
+    with tab1:
+        st.subheader("1. 기업가치 평가 (EV/EBITDA & 가중평가)")
+        st.info("실무에서 간편법으로 쓰이는 **시장배수법(EV/EBITDA)**과 상증세법상 **가중평가** 로직입니다.")
+
+        # 평가 방식 선택
+        ev_method = st.radio("평가 방식 선택", ["시장배수법 (EV/EBITDA)", "순손익/순자산 가중평가 (본질가치)"])
+
+        if ev_method == "시장배수법 (EV/EBITDA)":
+            st.markdown("##### 📊 EV/EBITDA 방식")
+            st.caption("기업전체가치(EV)를 구한 뒤 순차입금을 빼서 자기자본가치(Equity)를 구합니다.")
+            
+            col_e1, col_e2 = st.columns(2)
+            with col_e1:
+                ebitda = st.number_input("EBITDA (상각전영업이익)", value=100000000, step=1000000, format="%d", help="영업이익 + 감가상각비")
+                multiple = st.number_input("적용 EV/EBITDA 배수", value=8.0, step=0.1, help="동종 상장기업 평균 배수 (보통 5~10)")
+            with col_e2:
+                net_debt = st.number_input("순차입금 (이자발생부채 - 현금)", value=300000000, step=1000000, format="%d")
+                shares = st.number_input("발행주식 총수 (주)", value=10000, step=100, format="%d")
+
+            # 계산
+            ev_value = ebitda * multiple  # 기업전체가치 (Enterprise Value)
+            equity_value = ev_value - net_debt # 자기자본가치 (Equity Value)
+            value_per_share = equity_value / shares if shares > 0 else 0
+
+            st.divider()
+            c1, c2, c3 = st.columns(3)
+            c1.metric("기업전체가치 (EV)", f"{ev_value:,.0f} 원")
+            c2.metric("자기자본가치 (Equity)", f"{equity_value:,.0f} 원")
+            c3.metric("1주당 가치", f"{value_per_share:,.0f} 원")
+
+        else: # 가중평가
+            st.markdown("##### ⚖️ 순손익/순자산 가중평가")
+            st.caption("비상장주식 평가 시 주로 활용 (예: 순손익가치 3 : 순자산가치 2)")
+
+            col_w1, col_w2 = st.columns(2)
+            with col_w1:
+                val_income = st.number_input("주당 순손익가치 (수익가치)", value=15000)
+                weight_income = st.number_input("순손익가치 가중치", value=3, min_value=0)
+            with col_w2:
+                val_asset = st.number_input("주당 순자산가치 (자산가치)", value=10000)
+                weight_asset = st.number_input("순자산가치 가중치", value=2, min_value=0)
+            
+            if (weight_income + weight_asset) > 0:
+                weighted_avg = ((val_income * weight_income) + (val_asset * weight_asset)) / (weight_income + weight_asset)
+                st.divider()
+                st.metric("가중평균 주당가치", f"{weighted_avg:,.0f} 원")
+            else:
+                st.warning("가중치 합은 0보다 커야 합니다.")
+
+    # --------------------------------------------------------------------------
+    # Tab 2: 지식재산권 (로열티공제법)
+    # --------------------------------------------------------------------------
+    with tab2:
+        st.subheader("2. 무형자산 - 로열티공제법 (Relief-from-Royalty)")
+        st.markdown("**특허권, 상표권** 평가의 표준 방식입니다. 기술을 소유함으로써 절약되는 로열티를 가치로 환산합니다.")
+
+        # 입력 변수
+        col_r1, col_r2, col_r3 = st.columns(3)
+        with col_r1:
+            revenue_base = st.number_input("예상 연매출액 (첫해)", value=500000000, step=10000000, format="%d")
+            growth_rate = st.number_input("매출 성장률 (%)", value=3.0) / 100
+        with col_r2:
+            royalty_rate = st.number_input("적정 로열티율 (%)", value=3.0, help="업종별 통상 실시료율 적용") / 100
+            tax_rate = st.number_input("법인세율 (%)", value=20.0) / 100
+        with col_r3:
+            discount_rate = st.number_input("할인율 (WACC+기술위험)", value=12.0) / 100
+            life_years = st.number_input("경제적 내용연수 (년)", value=5, min_value=1, max_value=20)
+
+        # 현금흐름표 생성 및 계산
+        st.markdown("###### 📊 연도별 현금흐름 추정")
+        
+        data = []
+        total_pv = 0
+        
+        current_revenue = revenue_base
+        
+        for i in range(1, life_years + 1):
+            # 1. 매출액 (성장률 반영)
+            if i > 1:
+                current_revenue = current_revenue * (1 + growth_rate)
+            
+            # 2. 절약 로열티 (매출 * 로열티율)
+            saved_royalty = current_revenue * royalty_rate
+            
+            # 3. 세후 효과 (절약분 * (1-세율))
+            after_tax_benefit = saved_royalty * (1 - tax_rate)
+            
+            # 4. 현가계수
+            pv_factor = 1 / ((1 + discount_rate) ** i)
+            
+            # 5. 현재가치
+            pv = after_tax_benefit * pv_factor
+            total_pv += pv
+            
+            data.append({
+                "연차": f"{i}년차",
+                "예상매출": f"{current_revenue:,.0f}",
+                "세전로열티": f"{saved_royalty:,.0f}",
+                "세후이익": f"{after_tax_benefit:,.0f}",
+                "현가계수": f"{pv_factor:.4f}",
+                "현재가치(PV)": f"{pv:,.0f}"
+            })
+            
+        # 데이터프레임 표시
+        df_ip = pd.DataFrame(data)
+        st.dataframe(df_ip, use_container_width=True)
+        
+        st.divider()
+        st.success(f"📘 **산정된 무형자산(특허/상표) 가치:** {total_pv:,.0f} 원")
+        st.caption("※ 실무 Tip: 로열티율은 보통 매출액의 2~5% 내외에서 결정되는 경우가 많습니다.")
+
+    # --------------------------------------------------------------------------
+    # Tab 3: 영업권 (초과수익법)
+    # --------------------------------------------------------------------------
+    with tab3:
+        st.subheader("3. 영업권 - 초과수익법 (Excess Earnings Method)")
+        st.markdown("기업이 보유한 **정상수익률을 초과하는 이익**을 자본화하여 영업권을 산정합니다.")
+
+        col_g1, col_g2 = st.columns(2)
+        
+        with col_g1:
+            avg_op_profit = st.number_input("최근 3년 평균 영업이익", value=150000000, step=1000000, format="%d")
+            cap_rate = st.number_input("영업권 환원이율 (%)", value=20.0, help="초과수익의 지속성을 반영한 할인율") / 100
+            
+        with col_g2:
+            biz_value_asset = st.number_input("기업 투하 자본 (순자산가액)", value=1000000000, step=10000000, format="%d")
+            normal_return_rate = st.number_input("정상 수익률 (기대이율) (%)", value=8.0, help="동종 업계 평균 자기자본이익률 등") / 100
+
+        # 계산 로직
+        # 1. 정상 이익 = 투하자본 * 정상수익률
+        normal_profit = biz_value_asset * normal_return_rate
+        
+        # 2. 초과 이익 = 영업이익 - 정상이익
+        excess_profit = avg_op_profit - normal_profit
+        
+        # 3. 영업권 가치 = 초과이익 / 환원이율 (영구환원 가정 시)
+        # 만약 기간이 정해져 있다면 연금현가계수 써야 함. 여기선 영구환원(간편법) or 기간정하기 선택
+        
+        gw_duration = st.radio("수익 지속 기간 가정", ["영구 지속 (환원이율로 나눔)", "일정 기간 (연금현가계수)"])
+        
+        if gw_duration == "영구 지속 (환원이율로 나눔)":
+            if cap_rate > 0:
+                goodwill_value = excess_profit / cap_rate
+            else:
+                goodwill_value = 0
+                st.warning("환원이율을 입력하세요.")
+        else:
+            duration_years = st.slider("초과수익 지속 연수", 3, 10, 5)
+            # 연금현가계수
+            if cap_rate > 0:
+                annuity_factor = (1 - (1 + cap_rate) ** (-duration_years)) / cap_rate
+                goodwill_value = excess_profit * annuity_factor
+            else:
+                goodwill_value = excess_profit * duration_years
+        
+        # 결과 표시
+        st.divider()
+        c1, c2, c3 = st.columns(3)
+        c1.metric("정상 수익", f"{normal_profit:,.0f} 원", help="투하자본 × 정상수익률")
+        c2.metric("초과 수익", f"{excess_profit:,.0f} 원", help="평균영업이익 - 정상이익")
+        c3.metric("🏆 영업권 가치", f"{goodwill_value:,.0f} 원", delta_color="normal")
+        
+        if excess_profit < 0:
+            st.error("초과수익이 마이너스입니다. 영업권 가치가 발생하지 않습니다.")
